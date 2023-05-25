@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axiosInstance from '../../utils/config'
+import axios from 'axios'
 
 function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
     const nameRef = useRef()
@@ -10,6 +11,7 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
 
     const [category, setCategory] = useState([])
     const [subCategory, setSubCategory] = useState([])
+    const [file, setFile] = useState([]);
 
     useEffect(() => {
         axiosInstance.get(`/categoriya_base_all_views`)
@@ -30,19 +32,61 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
     const addFunc = (e) => {
         e.preventDefault()
         const data = new FormData()
+
+        // file.map((file) => {
+        //     formData.append('files', file);
+        //   });
+
+
+        console.log(file)
+
+        data.append("img", file)
         data.append("name", nameRef.current?.value)
-        data.append("content", textRef.current?.value)
+        data.append("cotent", textRef.current?.value)
         data.append("price", priceRef.current?.value)
-        data.append("id_category", categoryRef.current?.value,)
-        data.append("id_sub_category", subCategoryRef.current?.value,)
+        data.append("rank", "122")
+        data.append("id_category", Number(categoryRef.current?.value))
+        data.append("id_sub_category", Number(subCategoryRef.current?.value))
 
         console.log(data);
 
-        axiosInstance.post(`/flowers_base_all_views/`, data).then((res) => {
+        const token = localStorage.getItem('token');
+
+        console.log({
+            "name": nameRef.current?.value,
+            "cotent": textRef.current?.value,
+            "price": priceRef.current?.value,
+            "rank": "122",
+            "id_category": Number(categoryRef.current?.value),
+            "id_sub_category": Number(subCategoryRef.current?.value),
+        });
+
+        axios.post(`http://45.12.72.210/api/base/flowers_base_all_views/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                "Authorization": token ? `Bearer ${token}` : ''
+            }
+        }).then((res) => {
+            console.log(res.data);
             Alert(setAlert, "success", "Добавлено успешно");
             setData([res.data, ...data])
             setAddModal(false)
         })
+
+
+        // axiosInstance.post(`/flowers_base_all_views/`, {
+        //     "name": nameRef.current?.value,
+        //     "cotent": textRef.current?.value,
+        //     "price": priceRef.current?.value,
+        //     "rank": "122",
+        //     "id_category": Number(categoryRef.current?.value),
+        //     "id_sub_category": Number(subCategoryRef.current?.value),
+        // }).then((res) => {
+        //     console.log(res.data);
+        //     Alert(setAlert, "success", "Добавлено успешно");
+        //     setData([res.data, ...data])
+        //     setAddModal(false)
+        // })
     }
 
 
@@ -102,6 +146,11 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
                                             })}
                                         </select>
                                     </div>
+                                </div>
+
+                                <div className="col-lg-12">
+                                    <input type="file" id="files" name="files" multiple 
+                                    onChange={(e) => setFile(e.target.files)}/>
                                 </div>
 
                                 <div className="col-lg-12">
