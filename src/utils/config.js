@@ -17,4 +17,4 @@ axiosInstance.interceptors.request.use(function (config) {
 
 export default axiosInstance;
 
-export const url = "http://45.12.72.210/api/base"
+export const url = "http://45.12.72.210"

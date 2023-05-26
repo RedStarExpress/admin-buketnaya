@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import axiosInstance from '../../utils/config'
 import axios from 'axios'
 
-function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
+function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert, setElements }) {
     const nameRef = useRef()
     const priceRef = useRef()
     const categoryRef = useRef()
@@ -11,7 +11,7 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
 
     const [category, setCategory] = useState([])
     const [subCategory, setSubCategory] = useState([])
-    const [file, setFile] = useState([]);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         axiosInstance.get(`/categoriya_base_all_views`)
@@ -33,14 +33,11 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
         e.preventDefault()
         const data = new FormData()
 
-        // file.map((file) => {
-        //     formData.append('files', file);
-        //   });
+        for (let i = 0; i < Object.values(file).length; i++) {
+            data.append("img", Object.values(file)[i])
+            console.log(Object.values(file)[i]);
+        }
 
-
-        console.log(file)
-
-        data.append("img", file)
         data.append("name", nameRef.current?.value)
         data.append("cotent", textRef.current?.value)
         data.append("price", priceRef.current?.value)
@@ -52,15 +49,6 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
 
         const token = localStorage.getItem('token');
 
-        console.log({
-            "name": nameRef.current?.value,
-            "cotent": textRef.current?.value,
-            "price": priceRef.current?.value,
-            "rank": "122",
-            "id_category": Number(categoryRef.current?.value),
-            "id_sub_category": Number(subCategoryRef.current?.value),
-        });
-
         axios.post(`http://45.12.72.210/api/base/flowers_base_all_views/`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -69,26 +57,22 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
         }).then((res) => {
             console.log(res.data);
             Alert(setAlert, "success", "Добавлено успешно");
-            setData([res.data, ...data])
+            axiosInstance.get(`/flowers_base_all_views/?page=1`)
+                .then((res) => {
+                    console.log(res.data);
+                    setData(res.data?.results);
+                    setElements(res.data?.count)
+                })
             setAddModal(false)
         })
-
-
-        // axiosInstance.post(`/flowers_base_all_views/`, {
-        //     "name": nameRef.current?.value,
-        //     "cotent": textRef.current?.value,
-        //     "price": priceRef.current?.value,
-        //     "rank": "122",
-        //     "id_category": Number(categoryRef.current?.value),
-        //     "id_sub_category": Number(subCategoryRef.current?.value),
-        // }).then((res) => {
-        //     console.log(res.data);
-        //     Alert(setAlert, "success", "Добавлено успешно");
-        //     setData([res.data, ...data])
-        //     setAddModal(false)
-        // })
     }
 
+    // const trashFile = (index) => {
+    //     if (file?.length > 0) {
+    //         let arr = file.filter((f, i) => i !== index);
+    //         setFile(arr);
+    //     }
+    // };
 
 
     return (
@@ -149,13 +133,16 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
                                 </div>
 
                                 <div className="col-lg-12">
-                                    <input type="file" id="files" name="files" multiple 
-                                    onChange={(e) => setFile(e.target.files)}/>
+                                    <div className="mb-3">
+                                        <input type="file" id="files" className="form-control"
+                                            name="files" multiple
+                                            onChange={(e) => setFile(e.target.files)} />
+                                    </div>
                                 </div>
 
                                 <div className="col-lg-12">
                                     <div className="mb-3">
-                                        <textarea class="form-control" rows="5" ref={textRef}
+                                        <textarea className="form-control" rows="5" ref={textRef}
                                             placeholder='текст'></textarea>
                                     </div>
                                 </div>

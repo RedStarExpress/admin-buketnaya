@@ -16,7 +16,7 @@ function Login() {
 
     const login = (e) => {
         e.preventDefault()
-        axios.post(`${url}/user_sigin_in_views/`, {
+        axios.post(`${url}/api/base/user_sigin_in_views/`, {
             username: loginRef.current.value,
             password: passwordRef.current.value
         }).then((res) => {

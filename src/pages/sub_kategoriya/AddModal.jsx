@@ -23,7 +23,13 @@ function AddModal({ data, setData, addModal, setAddModal, Alert, setAlert }) {
         }).then((res) => {
             console.log(res.data);
             Alert(setAlert, "success", "Добавлено успешно");
-            setData([res.data, ...data])
+
+            axiosInstance.get(`/sub_categoriya_base_all_views/`)
+                .then((res) => {
+                    console.log(res.data);
+                    setData(res.data);
+                })
+
             setAddModal(false)
         })
     }

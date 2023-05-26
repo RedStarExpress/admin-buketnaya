@@ -88,7 +88,7 @@ function Kategoriya() {
                         </tbody>
                     </table>
 
-                    <div className="col-lg-12 mt-2">
+                    {/* <div className="col-lg-12 mt-2">
                         <Pagination
                             page={page}
                             size={size}
@@ -96,7 +96,7 @@ function Kategoriya() {
                             handlePageClick={handlePageClick}
                             formSubmit={formSubmit}
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
 

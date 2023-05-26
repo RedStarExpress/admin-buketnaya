@@ -4,7 +4,7 @@ import axiosInstance from '../../utils/config';
 function DeleteModal({ data, setData, deleteModal, setDeleteModal, Alert, setAlert }) {
     const deleteFunc = (e) => {
         e.preventDefault()
-        axiosInstance.delete(`/news/delete-by-id/${deleteModal.id}`).then((res) => {
+        axiosInstance.delete(`/blogs_base_crud_views/${deleteModal.id}/`).then((res) => {
             const newData = data.filter((item) => item.id !== deleteModal.id)
             Alert(setAlert, "success", "Удален успешно!");
             setData(newData)

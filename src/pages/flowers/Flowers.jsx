@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AlertContent, { Alert } from '../../components/Alert';
 import Pagination from '../../components/Pagination';
-import axiosInstance from '../../utils/config';
+import axiosInstance, { url } from '../../utils/config';
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import AddModal from './AddModal';
 import DeleteModal from './DeleteModal';
@@ -21,7 +21,7 @@ function Flowers() {
     const [deleteModal, setDeleteModal] = useState({ isShow: false, id: 0 })
 
     const handlePageClick = (e) => {
-        axiosInstance.get(`/flowers_base_all_views/?page=${e.target[0].value}`)
+        axiosInstance.get(`/flowers_base_all_views/?page=${e.selected+1}`)
             .then((res) => {
                 console.log(res.data);
                 setData(res.data?.results);
@@ -82,7 +82,7 @@ function Flowers() {
                                     return (
                                         <tr className='text-center table-light' key={index}>
                                             <th>{item.id}</th>
-                                            <td><img src="https://picsum.photos/id/20/200/100" alt="" /></td>
+                                            <td><img src={url+item.flowers[0]?.img} alt="" width={"50%"}/></td>
                                             <td>{item?.name}</td>
                                             <td>{item?.price}</td>
                                             <td>{item?.id_category?.title}</td>
@@ -119,6 +119,7 @@ function Flowers() {
                         setAddModal={setAddModal}
                         Alert={Alert}
                         setAlert={setAlert}
+                        setElements={setElements}
                     />
                 )
             }
@@ -132,6 +133,7 @@ function Flowers() {
                         setEditModal={setEditModal}
                         Alert={Alert}
                         setAlert={setAlert}
+                        setElements={setElements}
                     />
                 )}
             {

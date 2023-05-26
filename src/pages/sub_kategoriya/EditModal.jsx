@@ -25,16 +25,12 @@ function EditModal({ data, setData, editModal, setEditModal, Alert, setAlert }) 
         }).then((res) => {
             Alert(setAlert, "success", "Изменено успешно!");
 
-            const newData = data.filter((item) => {
-                if (item.id === editModal.item.id) {
-                    item.title = res?.data?.title;
-                    item.id_categoriya = res?.data?.id_categoriya
-                }
+            axiosInstance.get(`/sub_categoriya_base_all_views/`)
+                .then((res) => {
+                    console.log(res.data);
+                    setData(res.data);
+                })
 
-                return item
-            })
-
-            setData(newData)
             setEditModal({ isShow: false, item: {} })
         })
     }

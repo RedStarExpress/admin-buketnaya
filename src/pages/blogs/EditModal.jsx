@@ -1,27 +1,45 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import axiosInstance from '../../utils/config'
+import axios from 'axios'
 
-function EditModal({ data, setData, editModal, setEditModal, Alert, setAlert }) {
-    const titleRef = useRef()
+function EditModal({ data, setData, editModal, setEditModal, Alert, setAlert, setElements }) {
+    const nameRef = useRef()
+    const textRef = useRef()
+
+    const [file, setFile] = useState(null)
 
     const editFunc = (e) => {
         e.preventDefault()
 
-        axiosInstance.post(`/news/change`, {
-            id: editModal.item.id,
-            title: titleRef?.current?.value || "",
+        const data = new FormData()
+
+        if (file) {
+            for (let i = 0; i < Object.values(file)?.length; i++) {
+                data.append("img", Object.values(file)[i])
+                console.log(Object.values(file)[i]);
+            }
+        } 
+
+        data.append("title", nameRef.current?.value)
+        data.append("content", textRef.current?.value)
+
+        const token = localStorage.getItem('token');
+
+        axios.put(`http://45.12.72.210/api/base/blogs_base_crud_views/${editModal.item.id}/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                "Authorization": token ? `Bearer ${token}` : ''
+            }
         }).then((res) => {
-            Alert(setAlert, "success", "Изменено успешно!");
+            console.log(res.data);
+            Alert(setAlert, "success", "Добавлено успешно");
+            axiosInstance.get(`/blogs_base_all_views/?page=1`)
+                .then((res) => {
+                    console.log(res.data);
+                    setData(res.data?.results);
+                    setElements(res.data?.count)
+                })
 
-            const newData = data.filter((item) => {
-                if (item.id === editModal.item.id) {
-                    item.title = res?.data?.title;
-                }
-
-                return item
-            })
-
-            setData(newData)
             setEditModal({ isShow: false, item: {} })
         })
     }
@@ -35,6 +53,7 @@ function EditModal({ data, setData, editModal, setEditModal, Alert, setAlert }) 
                         <button type="button" className="btn-close"
                             onClick={() => setEditModal({ isShow: false, item: {} })}></button>
                     </div>
+
                     <div className="modal-body">
                         <form onSubmit={editFunc}>
                             <div className="row">
@@ -42,15 +61,31 @@ function EditModal({ data, setData, editModal, setEditModal, Alert, setAlert }) 
                                     <div className="mb-3">
                                         <input className="form-control form-control-lg"
                                             defaultValue={editModal.item.title}
-                                            ref={titleRef} type="text"
-                                            placeholder='имя'
-                                        />
+                                            ref={nameRef} type="text"
+                                            placeholder='заголовок' />
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-12">
+                                    <div className="mb-3">
+                                        <textarea class="form-control" rows="5" ref={textRef}
+                                            defaultValue={editModal.item.content}
+                                            placeholder='текст'></textarea>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-12">
+                                    <div className="mb-3">
+                                        <input type="file" id="files"
+                                            className="form-control"
+                                            name="files" multiple
+                                            onChange={(e) => setFile(e.target.files)} />
                                     </div>
                                 </div>
 
                                 <div className="col-lg-12">
                                     <button className="btn-lg btn btn-primary w-100" type='submit'>
-                                        Изменять
+                                    Изменять
                                     </button>
                                 </div>
                             </div>

@@ -21,7 +21,7 @@ function Blogs() {
     const [deleteModal, setDeleteModal] = useState({ isShow: false, id: 0 })
 
     const handlePageClick = (e) => {
-        axiosInstance.get(`/blogs_base_all_views/?page=${e.target[0].value}`)
+        axiosInstance.get(`/blogs_base_all_views/?page=${e.slected+1}`)
             .then((res) => {
                 console.log(res.data);
                 setData(res.data?.results);
@@ -81,7 +81,7 @@ function Blogs() {
                                     return (
                                         <tr className='text-center table-light' key={index}>
                                             <th>{item.id}</th>
-                                            <td><img src={url+item?.img} alt="" /></td>
+                                            <td><img src={url+item.img} alt="" width={"50%"}/></td>
                                             <td>{item?.title}</td>
                                             <td>{item?.content}</td>
                                             <td className="text-center">
@@ -117,6 +117,7 @@ function Blogs() {
                         setAddModal={setAddModal}
                         Alert={Alert}
                         setAlert={setAlert}
+                        setElements={setElements}
                     />
                 )
             }
@@ -130,6 +131,7 @@ function Blogs() {
                         setEditModal={setEditModal}
                         Alert={Alert}
                         setAlert={setAlert}
+                        setElements={setElements}
                     />
                 )}
             {
@@ -141,6 +143,7 @@ function Blogs() {
                         setDeleteModal={setDeleteModal}
                         Alert={Alert}
                         setAlert={setAlert}
+                        setElements={setElements}
                     />
                 )
             }
